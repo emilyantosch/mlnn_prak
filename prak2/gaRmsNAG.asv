@@ -11,7 +11,6 @@ function [w, track] = gaRmsNAG(gradFunc, eta, w0, nIts, gamma, beta)
 
     % Initialize
     w = w0;
-    clip = 
     track = zeros(length(w0), nIts);
     v = zeros(size(w0));
     lambda = 1e-8;
@@ -20,17 +19,10 @@ function [w, track] = gaRmsNAG(gradFunc, eta, w0, nIts, gamma, beta)
     for ii = 1:nIts
         g = gradFunc(w);
 
-        ng = norm(g);
-
-        if ng > clip
-            g = clip/ng * g;
-        end
-       
        s = beta * s + (1-beta)* g.* g;
-       
        etaVec = eta ./ sqrt(s+lambda);
 
-       v = gamma + v - etaVec * gradFunc(w+gamma*v);
+       v = gamma * v - etaVec * gradFunc(w+gamma*v);
        w = w + v;
 
         track(:, ii) = w;

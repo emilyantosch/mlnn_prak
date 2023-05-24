@@ -11,26 +11,18 @@ function [w, track] = gaRmsNAG(gradFunc, eta, w0, nIts, gamma, beta)
 
     % Initialize
     w = w0;
-    clip = 0.5;
     track = zeros(length(w0), nIts);
     v = zeros(size(w0));
     lambda = 1e-8;
     s = zeros(size(w0));
     % Iterate over the number of iterations and update the weight vector
     for ii = 1:nIts
-        g = gradFunc(w);
+        g = gradFunc(w+gamma*v);
 
-        ng = norm(g)
-
-        if ng > clip
-            g = clip/ng * g;
-        end
-       g
        s = beta * s + (1-beta)* g.* g;
-       
        etaVec = eta ./ sqrt(s+lambda);
 
-       v = gamma + v - etaVec * gradFunc(w+gamma*v);
+       v = gamma * v - etaVec * g;
        w = w + v;
 
         track(:, ii) = w;
